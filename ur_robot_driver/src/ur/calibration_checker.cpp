@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-06-14
  *
  */
@@ -20,7 +20,7 @@ CalibrationChecker::CalibrationChecker(const std::string& expected_hash)
   : expected_hash_(expected_hash), checked_(false)
 {
 }
-bool CalibrationChecker::consume(std::shared_ptr<primary_interface::PrimaryPackage> product)
+bool CalibrationChecker::consume(std::shared_ptr<comm::URPackage<primary_interface::PackageHeader>> product)
 {
   auto kin_info = std::dynamic_pointer_cast<primary_interface::KinematicsInfo>(product);
   if (kin_info != nullptr)
@@ -32,9 +32,7 @@ bool CalibrationChecker::consume(std::shared_ptr<primary_interface::PrimaryPacka
       LOG_ERROR("The calibration parameters of the connected robot don't match the ones from the given kinematics "
                 "config file. Please be aware that this can lead to critical inaccuracies of tcp positions. Use the "
                 "ur_calibration tool to extract the correct calibration from the robot and pass that into the "
-                "description. See "
-                "[https://github.com/UniversalRobots/Universal_Robots_ROS_Driver#extract-calibration-information] for "
-                "details.");
+                "description. See [TODO Link to documentation] for details.");
     }
     else
     {

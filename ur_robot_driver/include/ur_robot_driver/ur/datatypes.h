@@ -21,7 +21,7 @@
 /*!\file
  * This file contains enums for internal mode representations.
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-11-04
  *
  */
@@ -33,7 +33,6 @@ namespace ur_driver
 {
 enum class RobotMode : int8_t
 {
-  UNKNOWN = -128,  // This is not defined by UR but only inside this driver
   NO_CONTROLLER = -1,
   DISCONNECTED = 0,
   CONFIRM_SAFETY = 1,

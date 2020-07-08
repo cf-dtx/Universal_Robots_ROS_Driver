@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-05-28
  *
  */
@@ -35,13 +35,15 @@
 
 namespace ur_calibration
 {
-class CalibrationConsumer : public ur_driver::comm::IConsumer<ur_driver::primary_interface::PrimaryPackage>
+class CalibrationConsumer
+  : public ur_driver::comm::IConsumer<ur_driver::comm::URPackage<ur_driver::primary_interface::PackageHeader>>
 {
 public:
   CalibrationConsumer();
   virtual ~CalibrationConsumer() = default;
 
-  virtual bool consume(std::shared_ptr<ur_driver::primary_interface::PrimaryPackage> product);
+  virtual bool
+  consume(std::shared_ptr<ur_driver::comm::URPackage<ur_driver::primary_interface::PackageHeader>> product);
 
   bool isCalibrated() const
   {

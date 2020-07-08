@@ -19,13 +19,12 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-09
  *
  */
 //----------------------------------------------------------------------
 #include "ur_robot_driver/primary/robot_message.h"
-#include "ur_robot_driver/primary/abstract_primary_consumer.h"
 
 namespace ur_driver
 {
@@ -34,11 +33,6 @@ namespace primary_interface
 bool RobotMessage::parseWith(comm::BinParser& bp)
 {
   return true;
-}
-
-bool RobotMessage::consumeWith(AbstractPrimaryConsumer& consumer)
-{
-  return consumer.consume(*this);
 }
 
 std::string RobotMessage::toString() const

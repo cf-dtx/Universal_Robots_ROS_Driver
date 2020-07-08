@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-08
  *
  */
@@ -27,7 +27,6 @@
 
 #include "ur_robot_driver/log.h"
 #include "ur_robot_driver/primary/robot_state/kinematics_info.h"
-#include "ur_robot_driver/primary/abstract_primary_consumer.h"
 
 #include <iomanip>
 
@@ -45,11 +44,6 @@ bool KinematicsInfo::parseWith(comm::BinParser& bp)
   bp.parse(calibration_status_);
 
   return true;
-}
-
-bool KinematicsInfo ::consumeWith(AbstractPrimaryConsumer& consumer)
-{
-  return consumer.consume(*this);
 }
 
 std::string KinematicsInfo::toString() const

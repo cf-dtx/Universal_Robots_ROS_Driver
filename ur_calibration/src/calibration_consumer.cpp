@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-05-28
  *
  */
@@ -33,7 +33,8 @@ CalibrationConsumer::CalibrationConsumer() : calibrated_(false)
 {
 }
 
-bool CalibrationConsumer::consume(std::shared_ptr<ur_driver::primary_interface::PrimaryPackage> product)
+bool CalibrationConsumer::consume(
+    std::shared_ptr<ur_driver::comm::URPackage<ur_driver::primary_interface::PackageHeader>> product)
 {
   auto kin_info = std::dynamic_pointer_cast<ur_driver::primary_interface::KinematicsInfo>(product);
   if (kin_info != nullptr)

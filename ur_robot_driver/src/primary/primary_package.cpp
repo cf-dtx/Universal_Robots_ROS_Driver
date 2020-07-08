@@ -19,14 +19,13 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-09
  *
  */
 //----------------------------------------------------------------------
 
 #include "ur_robot_driver/primary/primary_package.h"
-#include "ur_robot_driver/primary/abstract_primary_consumer.h"
 
 namespace ur_driver
 {

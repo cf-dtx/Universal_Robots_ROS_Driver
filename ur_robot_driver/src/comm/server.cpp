@@ -84,7 +84,7 @@ bool URServer::accept()
     return false;
 
   struct sockaddr addr;
-  socklen_t addr_len = sizeof(struct sockaddr);
+  socklen_t addr_len;
   int client_fd = -1;
 
   int retry = 0;
@@ -102,6 +102,9 @@ bool URServer::accept()
 
 void URServer::disconnectClient()
 {
+  if (client_.getState() != comm::SocketState::Connected)
+    return;
+
   client_.close();
 }
 

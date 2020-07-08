@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-08
  *
  */
@@ -65,8 +65,6 @@ public:
    * \returns A string representing the object
    */
   virtual std::string toString() const = 0;
-
-  using HeaderType = HeaderT;
 
 private:
   HeaderT header_;

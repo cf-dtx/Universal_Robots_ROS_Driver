@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-08
  *
  */
@@ -61,15 +61,6 @@ public:
    * \returns True, if the package was parsed successfully, false otherwise
    */
   virtual bool parseWith(comm::BinParser& bp);
-
-  /*!
-   * \brief Consume this package with a specific consumer.
-   *
-   * \param consumer Placeholder for the consumer calling this
-   *
-   * \returns true on success
-   */
-  virtual bool consumeWith(AbstractPrimaryConsumer& consumer);
 
   /*!
    * \brief Produces a human readable representation of the package object.

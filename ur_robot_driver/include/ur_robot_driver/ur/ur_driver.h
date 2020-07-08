@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-11
  *
  */
@@ -31,7 +31,6 @@
 #include "ur_robot_driver/comm/reverse_interface.h"
 #include "ur_robot_driver/comm/script_sender.h"
 #include "ur_robot_driver/ur/tool_communication.h"
-#include "ur_robot_driver/ur/version_information.h"
 #include "ur_robot_driver/primary/robot_message/version_message.h"
 #include "ur_robot_driver/rtde/rtde_writer.h"
 
@@ -58,19 +57,10 @@ public:
    * \param tool_comm_setup Configuration for using the tool communication.
    * \param calibration_checksum Expected checksum of calibration. Will be matched against the
    * calibration reported by the robot.
-   * \param reverse_port Port that will be opened by the driver to allow direct communication between the driver
-   * and the robot controller.
-   * \param script_sending_port The driver will offer an interface to receive the program's URScript on this port. If
-   * the robot cannot connect to this port, `External Control` will stop immediately.
-   * \param non_blocking_read Enable non-blocking mode for read (useful when used with combined_robot_hw)
-   * \param servoj_gain Proportional gain for arm joints following target position, range [100,2000]
-   * \param servoj_lookahead_time Time [S], range [0.03,0.2] smoothens the trajectory with this lookahead time
    */
   UrDriver(const std::string& robot_ip, const std::string& script_file, const std::string& output_recipe_file,
            const std::string& input_recipe_file, std::function<void(bool)> handle_program_state, bool headless_mode,
-           std::unique_ptr<ToolCommSetup> tool_comm_setup, const std::string& calibration_checksum = "",
-           const uint32_t reverse_port = 50001, const uint32_t script_sender_port = 50002, int servoj_gain = 2000,
-           double servoj_lookahead_time = 0.03, bool non_blocking_read = false);
+           std::unique_ptr<ToolCommSetup> tool_comm_setup, const std::string& calibration_checksum = "");
   /*!
    * \brief Constructs a new UrDriver object.
    *
@@ -82,22 +72,12 @@ public:
    * \param headless_mode Parameter to control if the driver should be started in headless mode.
    * \param calibration_checksum Expected checksum of calibration. Will be matched against the
    * calibration reported by the robot.
-   * \param reverse_port Port that will be opened by the driver to allow direct communication between the driver
-   * and the robot controller
-   * \param script_sending_port The driver will offer an interface to receive the program's URScript on this port.
-   * If the robot cannot connect to this port, `External Control` will stop immediately.
-   * \param non_blocking_read Enable non-blocking mode for read (useful when used with combined_robot_hw)
-   * \param servoj_gain Proportional gain for arm joints following target position, range [100,2000]
-   * \param servoj_lookahead_time Time [S], range [0.03,0.2] smoothens the trajectory with this lookahead time
    */
   UrDriver(const std::string& robot_ip, const std::string& script_file, const std::string& output_recipe_file,
            const std::string& input_recipe_file, std::function<void(bool)> handle_program_state, bool headless_mode,
-           const std::string& calibration_checksum = "", const uint32_t reverse_port = 50001,
-           const uint32_t script_sender_port = 50002, int servoj_gain = 2000, double servoj_lookahead_time = 0.03,
-           bool non_blocking_read = false)
+           const std::string& calibration_checksum = "")
     : UrDriver(robot_ip, script_file, output_recipe_file, input_recipe_file, handle_program_state, headless_mode,
-               std::unique_ptr<ToolCommSetup>{}, calibration_checksum, reverse_port, script_sender_port, servoj_gain,
-               servoj_lookahead_time, non_blocking_read)
+               std::unique_ptr<ToolCommSetup>{}, calibration_checksum)
   {
   }
 
@@ -122,11 +102,10 @@ public:
    * the robot.
    *
    * \param values Desired joint positions
-   * \param control_mode Control mode this command is assigned to.
    *
    * \returns True on successful write.
    */
-  bool writeJointCommand(const vector6d_t& values, const comm::ControlMode control_mode);
+  bool writeJointCommand(const vector6d_t& values);
 
   /*!
    * \brief Write a keepalive signal only.
@@ -194,14 +173,6 @@ public:
    */
   bool sendRobotProgram();
 
-  /*!
-   * \brief Returns version information about the currently connected robot
-   */
-  const VersionInformation& getVersion()
-  {
-    return robot_version_;
-  }
-
 private:
   std::string readScriptFile(const std::string& filename);
   std::string readKeepalive();
@@ -211,8 +182,8 @@ private:
   std::unique_ptr<rtde_interface::RTDEClient> rtde_client_;
   std::unique_ptr<comm::ReverseInterface> reverse_interface_;
   std::unique_ptr<comm::ScriptSender> script_sender_;
-  std::unique_ptr<comm::URStream<primary_interface::PrimaryPackage>> primary_stream_;
-  std::unique_ptr<comm::URStream<primary_interface::PrimaryPackage>> secondary_stream_;
+  std::unique_ptr<comm::URStream<ur_driver::primary_interface::PackageHeader>> primary_stream_;
+  std::unique_ptr<comm::URStream<ur_driver::primary_interface::PackageHeader>> secondary_stream_;
 
   double servoj_time_;
   uint32_t servoj_gain_;
@@ -226,11 +197,6 @@ private:
   std::string robot_ip_;
   bool in_headless_mode_;
   std::string full_robot_program_;
-
-  int get_packet_timeout_;
-  bool non_blocking_read_;
-
-  VersionInformation robot_version_;
 };
 }  // namespace ur_driver
 #endif  // ifndef UR_RTDE_DRIVER_UR_UR_DRIVER_H_INCLUDED

@@ -36,12 +36,12 @@ namespace comm
  *
  * @tparam HeaderT Header type of packages to produce.
  */
-template <typename T>
-class URProducer : public IProducer<T>
+template <typename HeaderT>
+class URProducer : public IProducer<HeaderT>
 {
 private:
-  URStream<T>& stream_;
-  Parser<T>& parser_;
+  URStream<HeaderT>& stream_;
+  Parser<HeaderT>& parser_;
   std::chrono::seconds timeout_;
 
   bool running_;
@@ -53,7 +53,8 @@ public:
    * \param stream The stream to read from
    * \param parser The parser to use to interpret received byte information
    */
-  URProducer(URStream<T>& stream, Parser<T>& parser) : stream_(stream), parser_(parser), timeout_(1), running_(false)
+  URProducer(URStream<HeaderT>& stream, Parser<HeaderT>& parser)
+    : stream_(stream), parser_(parser), timeout_(1), running_(false)
   {
   }
 
@@ -98,7 +99,7 @@ public:
    *
    * \returns Success of reading and parsing the package
    */
-  bool tryGet(std::vector<std::unique_ptr<T>>& products) override
+  bool tryGet(std::vector<std::unique_ptr<URPackage<HeaderT>>>& products) override
   {
     // TODO This function has become really ugly! That should be refactored!
 

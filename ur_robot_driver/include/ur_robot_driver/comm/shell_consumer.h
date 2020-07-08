@@ -19,7 +19,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-09
  *
  */
@@ -42,8 +42,8 @@ namespace comm
  *
  * @tparam HeaderT Header type of the packages to consume
  */
-template <typename T>
-class ShellConsumer : public IConsumer<T>
+template <typename HeaderT>
+class ShellConsumer : public IConsumer<URPackage<HeaderT>>
 {
 public:
   ShellConsumer() = default;
@@ -56,7 +56,7 @@ public:
    *
    * \returns True if the output was successful
    */
-  virtual bool consume(std::shared_ptr<T> product)
+  virtual bool consume(std::shared_ptr<URPackage<HeaderT>> product)
   {
     LOG_INFO("%s", product->toString().c_str());
     return true;

@@ -163,9 +163,9 @@ public:
 /*!
  * \brief Parent class for arbitrary producers of packages.
  *
- * @tparam T Type of the produced products
+ * @tparam HeaderT Header type of the produced packages
  */
-template <typename T>
+template <typename HeaderT>
 class IProducer
 {
 public:
@@ -200,7 +200,7 @@ public:
    *
    * \returns Success of the package production.
    */
-  virtual bool tryGet(std::vector<std::unique_ptr<T>>& products) = 0;
+  virtual bool tryGet(std::vector<std::unique_ptr<URPackage<HeaderT>>>& products) = 0;
 };
 
 /*!
@@ -228,14 +228,15 @@ public:
  * the producer is called and returned packages are saved in a queue. This queue is then either also
  * cyclically utilized by the registered consumer or can be externally used.
  *
- * @tparam T Type of the managed packages
+ * @tparam HeaderT Header type of the managed packages
  */
-template <typename T>
+template <typename HeaderT>
 class Pipeline
 {
 public:
   typedef std::chrono::high_resolution_clock Clock;
   typedef Clock::time_point Time;
+  using _package_type = URPackage<HeaderT>;
   /*!
    * \brief Creates a new Pipeline object, registering producer, consumer and notifier.
    * Additionally, an empty queue is initialized.
@@ -245,8 +246,8 @@ public:
    * \param name The pipeline's name
    * \param notifier The notifier to use
    */
-  Pipeline(IProducer<T>& producer, IConsumer<T>* consumer, std::string name, INotifier& notifier)
-    : producer_(producer), consumer_(consumer), name_(name), notifier_(notifier), queue_{ 32 }, running_{ false }
+  Pipeline(IProducer<HeaderT>& producer, IConsumer<_package_type>& consumer, std::string name, INotifier& notifier)
+    : producer_(producer), consumer_(&consumer), name_(name), notifier_(notifier), queue_{ 32 }, running_{ false }
   {
   }
   /*!
@@ -257,7 +258,7 @@ public:
    * \param name The pipeline's name
    * \param notifier The notifier to use
    */
-  Pipeline(IProducer<T>& producer, std::string name, INotifier& notifier)
+  Pipeline(IProducer<HeaderT>& producer, std::string name, INotifier& notifier)
     : producer_(producer), consumer_(nullptr), name_(name), notifier_(notifier), queue_{ 32 }, running_{ false }
   {
   }
@@ -326,17 +327,17 @@ public:
    *
    * \returns
    */
-  bool getLatestProduct(std::unique_ptr<T>& product, std::chrono::milliseconds timeout)
+  bool getLatestProduct(std::unique_ptr<URPackage<HeaderT>>& product, std::chrono::milliseconds timeout)
   {
     return queue_.waitDequeTimed(product, timeout);
   }
 
 private:
-  IProducer<T>& producer_;
-  IConsumer<T>* consumer_;
+  IProducer<HeaderT>& producer_;
+  IConsumer<_package_type>* consumer_;
   std::string name_;
   INotifier& notifier_;
-  moodycamel::BlockingReaderWriterQueue<std::unique_ptr<T>> queue_;
+  moodycamel::BlockingReaderWriterQueue<std::unique_ptr<_package_type>> queue_;
   std::atomic<bool> running_;
   std::thread pThread_, cThread_;
 
@@ -395,7 +396,7 @@ private:
     {
       LOG_WARN("No realtime capabilities found. Consider using a realtime system for better performance");
     }
-    std::vector<std::unique_ptr<T>> products;
+    std::vector<std::unique_ptr<_package_type>> products;
     while (running_)
     {
       if (!producer_.tryGet(products))
@@ -421,7 +422,7 @@ private:
 
   void runConsumer()
   {
-    std::unique_ptr<T> product;
+    std::unique_ptr<_package_type> product;
     while (running_)
     {
       // timeout was chosen because we should receive messages

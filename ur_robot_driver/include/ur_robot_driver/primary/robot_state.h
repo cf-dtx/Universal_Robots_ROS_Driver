@@ -28,6 +28,8 @@
 #ifndef UR_RTDE_DRIVER_ROBOT_STATE_H_INCLUDED
 #define UR_RTDE_DRIVER_ROBOT_STATE_H_INCLUDED
 
+#include <sstream>
+
 #include "ur_robot_driver/primary/primary_package.h"
 #include "ur_robot_driver/primary/package_header.h"
 
@@ -77,23 +79,23 @@ public:
    *
    * \returns True, if the package was parsed successfully, false otherwise
    */
-  virtual bool parseWith(comm::BinParser& bp);
-
-  /*!
-   * \brief Consume this specific package with a specific consumer.
-   *
-   * \param consumer Placeholder for the consumer calling this
-   *
-   * \returns true on success
-   */
-  virtual bool consumeWith(AbstractPrimaryConsumer& consumer);
+  virtual bool parseWith(comm::BinParser& bp)
+  {
+    return PrimaryPackage::parseWith(bp);
+  }
 
   /*!
    * \brief Produces a human readable representation of the package object.
    *
    * \returns A string representing the object
    */
-  virtual std::string toString() const;
+  virtual std::string toString() const
+  {
+    std::stringstream ss;
+    ss << "Type: " << static_cast<int>(state_type_) << std::endl;
+    ss << PrimaryPackage::toString();
+    return ss.str();
+  }
 
 private:
   RobotStateType state_type_;

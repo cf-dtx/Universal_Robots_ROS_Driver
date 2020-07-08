@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------
 /*!\file
  *
- * \author  Felix Exner exner@fzi.de
+ * \author  Felix Mauch mauch@fzi.de
  * \date    2019-04-08
  *
  */
@@ -30,7 +30,6 @@
 
 #include "ur_robot_driver/log.h"
 #include "ur_robot_driver/primary/robot_message/version_message.h"
-#include "ur_robot_driver/primary/abstract_primary_consumer.h"
 
 namespace ur_driver
 {
@@ -47,11 +46,6 @@ bool VersionMessage::parseWith(comm::BinParser& bp)
   bp.parseRemainder(build_date_);
 
   return true;  // not really possible to check dynamic size packets
-}
-
-bool VersionMessage ::consumeWith(AbstractPrimaryConsumer& consumer)
-{
-  return consumer.consume(*this);
 }
 
 std::string VersionMessage::toString() const
